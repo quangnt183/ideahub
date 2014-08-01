@@ -1,13 +1,46 @@
-ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working",
-	function($scope, $state, userData, working){
+ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ionicPopup", "$timeout", 
+	function($scope, $state, userData, working, $ionicPopup, $timeout){
 	$scope.curDoc = working.curDoc;
 	$scope.curProj = working.curProj;
+	$scope.savePop = function(){
+	  $scope.data = {}
+
+	  // An elaborate, custom popup
+	  var myPopup = $ionicPopup.show({
+	    template: '<input type="password" ng-model="data.wifi">',
+	    title: 'Enter Wi-Fi Password',
+	    subTitle: 'Please use normal things',
+	    scope: $scope,
+	    buttons: [
+	      { text: 'Cancel' },
+	      {
+	        text: '<b>Save</b>',
+	        type: 'button-positive',
+	        onTap: function(e) {
+	        	console.log('aaaaaa')
+	          if (!$scope.data.wifi) {
+	            //don't allow the user to close unless he enters wifi password
+	            e.preventDefault();
+	          } else {
+	            return $scope.data.wifi;
+	          }
+	        }
+	      },
+	    ]
+	  });
+	  myPopup.then(function(res) {
+	    console.log('Tapped!', res);
+	  });
+	  // $timeout(function() {
+	  //    myPopup.close(); //close the popup after 3 seconds for some reason
+	  // }, 3000);
+	}
 }]).
 directive("session", ["$timeout", "working", function($timeout, working){
   return {
     restrict: "E",
     link: function(scope, element){
-      var stage = new Kinetic.Stage({
+      var stage = document.tmp1= new Kinetic.Stage({
         container: element[0],
         width: window.innerWidth - 64,
         height: window.innerHeight - 44
@@ -24,8 +57,11 @@ directive("session", ["$timeout", "working", function($timeout, working){
       img.onload = function(){
       	scope.shapeLayer.add(pageImage = new Kinetic.Image({
       		x: 0, y: 0,
+      		height: stage.getHeight(),
+      		width: img.width * stage.getHeight() / img.height,
       		image: img
       	}));
+      	pageImage.setX((stage.getWidth() - pageImage.getWidth()) / 2);
       	scope.shapeLayer.draw();
       }
 
