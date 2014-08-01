@@ -1,3 +1,21 @@
 <ion-view scroll="false">
+  abcdef
+  <div class='notify'>{{ notification }}</div>
 	<div ng-click="goDocument()"> abc </div>
+  
 </ion-view>
+
+<script>
+  (function(){
+     var pubnub = PUBNUB.init({
+         publish_key   : "pub-c-8f3f9072-f2ea-4797-978c-0ae8279e4d9e",
+         subscribe_key : 'sub-c-13492cec-9330-11e3-b381-02ee2ddab7fe'
+     });
+     pubnub.subscribe({
+        channel : "document",
+        message : function(m){ 
+          $scope.updateMessage(m);
+          console.log('aaaa'); 
+     });
+   })();
+</script>
