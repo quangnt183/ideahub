@@ -1,1 +1,7 @@
 /* Empty. Add your own CSS if you like */
+ion-header-bar {
+	background-color: #4c16e1 !important;
+}
+ion-content {
+	background: #d8dae4;
+}
