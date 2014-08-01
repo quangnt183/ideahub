@@ -1,6 +1,10 @@
+
 ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "working", '$http',
 	function($scope, $state, userData, appData, working, $http, PubNub){
-	$scope.goDocument = function(project){
+
+
+	$scope.goProject = function(project){
+
 		working.curProj = project;
 		$state.transitionTo("documents");
 	}

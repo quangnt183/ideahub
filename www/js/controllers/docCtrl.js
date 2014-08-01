@@ -2,11 +2,9 @@ ideahub.controller("docCtrl", ["$scope", "$state", "userData", "working", "$http
 	function($scope, $state, userData, working, $http ){
 	$scope.curProj = working.curProj;
 
-  $scope.notification = '';
+	$scope.goDocument = function(doc){
+		working.curDoc = doc;
+		$state.transitionTo("pages");
+	}
 
-  
-  $scope.theChannel = 'document';
-  $scope.subscribe = function() {
-    $scope.PubNub.ngSubscribe({ channel: 'document' });
-  }
 }]);

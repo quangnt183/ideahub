@@ -1,27 +1,43 @@
-<ion-view scroll="false">
+<ion-view scroll="true">
 	<ion-header-bar class="bar-stable docs-header">
 		<label>Projects</label>
 		<img src="img/header-arrow.svg"/>
       	<label>{{curProj.name}}</label>
-      	<img id="docs-down-arrow" src="img/down-arrow.svg"/>
+      	<!-- <div id="docs-down-arrow"><img src="img/down-arrow.svg"/></div> -->
+	</ion-header-bar>
+	<ion-header-bar class="bar-stable docs-subheader">
+		<div><label>Dropbox</label>
+			<img src="img/head-dropbox-icon.svg"/>
+			<div><img src="img/down-arrow.svg"/></div>
+		</div>
+		<div><label>Gallery</label>
+			<img src="img/head-gallery-icon.svg"/></div>
+		<div><label>Camera</label>
+			<img src="img/head-camera-icon.svg"/></div>
 	</ion-header-bar>
 	<ion-content overflow-scroll="true" class="docs-content">
-		<!-- <div class="document creator">
-			<div><div>
-				<img src="img/creator-icon.svg"/>
-				<div>Add Image or PDF</div>
-			</div></div>
-		</div> -->
-		<div class="document" ng-repeat="document in curProj.docs">
+		<div class="document creator">
 			<div>
+
         <button ng-click="saveDocument()">Save</button>
         <button ng-click="subscribe()">Subscribe</button>
         <p>{{ notification }}
+
+				<h5>Add Image or PDF to create a Document</h5>
+			</div>
+			<div>
+				<img src="img/paper-clip.svg"/>
+			</div>
+		</div>
+		<div class="document" ng-repeat="document in curProj.docs">
+			<div ng-click="goDocument(document)">
+
 				<h5>{{document.name}}</h5>
 				<img src="{{document.pages[0].image}}" ng-show="document.pages[0].image"/>
-				<div>
-					<img src="img/trash.svg"/>
-				</div>
+			</div>
+			<div>
+				<img src="img/paper-clip.svg"/>
+				<img src="img/trash.svg"/>
 			</div>
 		</div>
 	</ion-content>
@@ -29,33 +45,78 @@
 
 
 <style>
-.docs-header {
+.docs-header, .docs-subheader {
 	border-bottom: 2px solid white !important;
 }
-.docs-header label{
+.docs-header label, .docs-subheader label{
 	font-size: 23px;
 	color: white;
 	margin: 0px 5px;
 }
-#docs-down-arrow {
-	position: absolute;
-	top: 41px;
-	left: 100px;
+.docs-subheader {
+	top: 44px;
+	height: 64px;
+}
+.docs-subheader>div {
+	width: 33.3%;
+	padding-top: 10px;
+}
+.docs-subheader>div>img{
+	float: right;
+	margin-top: -10px;
+	border-right: 2px solid white;
+}
+.docs-subheader>div:first-child>div{
+	margin-top: 14px;
+}
+.docs-subheader>div:first-child>div>img{
+	margin: 0px auto;
+	display: table;
+}
+.docs-subheader>div:last-child>img {
+	border-right: 0px;
 }
 .document {
 	float: left;
 	width: 33.3%;
+	padding-top: 120px;
 }
-.document>div {
+.document>div:first-child {
 	width: 192px;
 	height: 256px;
 	background-image: url(img/document.svg);
 	background-position: center;
+	background-size: 192px 256px;
+	background-repeat: no-repeat;
+	margin: 0px auto;
 }
-.document>div>h5 {
+.document>div:first-child>h5 {
+	font-size: 20px;
+	color: #333;
+	margin-top: 0px;
+	margin-bottom: 10px;
 }
-.document>div>*{
+.document>div:first-child>*{
+	width: 180px;
+	padding-left: 5px;
+}
+.document>div:last-child {
 	width: 192px;
+	margin: 0px auto;
+}
+.document>div:last-child>img:nth-child(1) {
+	float: left;
+	margin: -280px 10px 0 0;
+}
+.document>div:last-child>img:nth-child(2) {
+	float: right;
+	margin: -40px 10px 0 0;
+}
+.document.creator h5{
+	position: absolute;
+	font-size: 23px !important;
+	margin-top: 85px !important;
+	text-align: center;
 }
 </style>
 

@@ -22,7 +22,7 @@
 		<div class="project" ng-repeat="project in appData.projects">
 			<div>
 				<h5>{{project.name}}</h5>
-				<div ng-click="goDocument(project)">
+				<div ng-click="goProject(project)">
 					<div>
 						<img src="{{project.docs[0].pages[0].image}}" ng-show="project.docs[0].pages[0].image"/>
 					</div>

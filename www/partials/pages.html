@@ -1,0 +1,50 @@
+<ion-view scroll="false">
+	<ion-header-bar class="bar-stable pages-header">
+		<label>{{curProj.name}}</label>
+		<img src="img/header-arrow.svg"/>
+      	<label>{{curDoc.name}}</label>
+      	<h1 class="title">&nbsp;</h1>
+      	<div class="buttons">
+	    	<div id="share-btn"></div>  
+	    </div>
+	</ion-header-bar>
+	<ion-content overflow-scroll="true" class="pages-content">
+		<div id="left-menu">
+			<img src="img/comment.svg"/>  
+			<img src="img/pen.svg"/>  
+			<img src="img/eraser.svg"/>  
+			<img src="img/pic.svg"/>  
+		</div>
+		<session></session>
+	</ion-content>
+</ion-view>
+<style>
+.pages-header {
+	border-bottom: 2px solid white !important;
+}
+.pages-header label{
+	font-size: 23px;
+	color: white;
+	margin: 0px 5px;
+}
+#share-btn {
+	background-image: url(img/share.svg);
+	background-position: center;
+	background-size: 120%;
+	width: 40px;
+	height: 30px;
+}
+#left-menu {
+	width: 64px;
+	height: 100%;
+	border-right: 2px solid #4c16e1;
+	float: left;
+}
+session {
+	float: left;
+}
+#left-menu>img {
+	border-bottom: 2px solid #4c16e1;
+	margin: 0px 7px;
+}
+</style>
