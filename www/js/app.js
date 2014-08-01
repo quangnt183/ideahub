@@ -14,6 +14,10 @@ ideahub = angular.module('ideahub', ['ionic'])
       url: '/documents',
       templateUrl: 'partials/documents.html',
       controller: 'docCtrl'
+    }).state('pages', {
+      url: '/pages',
+      templateUrl: 'partials/pages.html',
+      controller: 'pageCtrl'
     });
   $urlRouterProvider.otherwise("/projects");
 })
