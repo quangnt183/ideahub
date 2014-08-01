@@ -14,6 +14,9 @@
 		</div> -->
 		<div class="document" ng-repeat="document in curProj.docs">
 			<div>
+        <button ng-click="saveDocument()">Save</button>
+        <button ng-click="subscribe()">Subscribe</button>
+        <p>{{ notification }}
 				<h5>{{document.name}}</h5>
 				<img src="{{document.pages[0].image}}" ng-show="document.pages[0].image"/>
 				<div>
@@ -23,6 +26,8 @@
 		</div>
 	</ion-content>
 </ion-view>
+
+
 <style>
 .docs-header {
 	border-bottom: 2px solid white !important;
