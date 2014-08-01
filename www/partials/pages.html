@@ -5,7 +5,8 @@
       	<label>{{curDoc.name}}</label>
       	<h1 class="title">&nbsp;</h1>
       	<div class="buttons">
-	    	<div id="share-btn"></div>  
+      		<div id="save-btn" ng-click="savePop()"></div>
+	    	<div id="share-btn"></div>
 	    </div>
 	</ion-header-bar>
 	<ion-content overflow-scroll="true" class="pages-content">
@@ -33,6 +34,14 @@
 	background-size: 120%;
 	width: 40px;
 	height: 30px;
+	border-left: 2px solid white;
+}
+#save-btn {
+	background-image: url(img/save.svg);
+	background-position: center;
+	width: 50px;
+	height: 30px;
+	border-left: 2px solid white;
 }
 #left-menu {
 	width: 64px;
