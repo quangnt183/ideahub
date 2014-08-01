@@ -1,3 +1,55 @@
 <ion-view scroll="false">
-	<div> def </div>
+	<ion-header-bar class="bar-stable docs-header">
+		<label>Projects</label>
+		<img src="img/header-arrow.svg"/>
+      	<label>{{curProj.name}}</label>
+      	<img id="docs-down-arrow" src="img/down-arrow.svg"/>
+	</ion-header-bar>
+	<ion-content overflow-scroll="true" class="docs-content">
+		<!-- <div class="document creator">
+			<div><div>
+				<img src="img/creator-icon.svg"/>
+				<div>Add Image or PDF</div>
+			</div></div>
+		</div> -->
+		<div class="document" ng-repeat="document in curProj.docs">
+			<div>
+				<h5>{{document.name}}</h5>
+				<img src="{{document.pages[0].image}}" ng-show="document.pages[0].image"/>
+				<div>
+					<img src="img/trash.svg"/>
+				</div>
+			</div>
+		</div>
+	</ion-content>
 </ion-view>
+<style>
+.docs-header {
+	border-bottom: 2px solid white !important;
+}
+.docs-header label{
+	font-size: 23px;
+	color: white;
+	margin: 0px 5px;
+}
+#docs-down-arrow {
+	position: absolute;
+	top: 41px;
+	left: 100px;
+}
+.document {
+	float: left;
+	width: 33.3%;
+}
+.document>div {
+	width: 192px;
+	height: 256px;
+	background-image: url(img/document.svg);
+	background-position: center;
+}
+.document>div>h5 {
+}
+.document>div>*{
+	width: 192px;
+}
+</style>
