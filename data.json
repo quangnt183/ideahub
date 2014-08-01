@@ -1,0 +1,38 @@
+doc = {
+	id: xxx
+	user: {
+		id:  xxx
+		name: xxx
+
+	}
+	project {
+		id: xxx
+		name: xxx
+	}
+	created_at: xxx
+	updated_at: xxx
+
+	pages: [
+		{
+			image: {
+				thumb: xxx
+				original
+			}
+			threads: [
+				{
+					user: {
+						name: xxx
+					}
+					created_at: xxx
+					body: xxx
+					from: {x: xxx, y: yyy}
+					to: {x: xxx, y: yyy}
+				}
+			]
+			points: [
+				[x, y], ...
+			]
+					
+		}
+	]
+}
