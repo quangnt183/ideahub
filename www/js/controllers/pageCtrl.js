@@ -1,15 +1,74 @@
-ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ionicPopup", "$timeout", 
-	function($scope, $state, userData, working, $ionicPopup, $timeout){
+ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ionicPopup", "$timeout", "$http",
+	function($scope, $state, userData, working, $ionicPopup, $timeout, $http){
 	$scope.curDoc = working.curDoc;
 	$scope.curProj = working.curProj;
+  $scope.notification = '';
+
+  /*
+  * fire whenever user press Save to online
+  * need full data of current document to be assigned to data
+  * if email is present -> share
+  */
+  $scope.saveData = function(data, email, callback) {
+    if(!data)
+      // sample
+      data = {
+        x: 'x',
+        y: 'y'
+      }
+
+    $http.put(config.server + '/save', {page: data, email: email}).
+      success(function(data, status) {
+        console.log("save working data success", data);
+        callback(data);
+      }).
+      error(function(data, status) {
+        console.log("fail", data);
+      });
+  }
+
+  $scope.sharePop = function() {
+    $scope.data = {}
+
+    // An elaborate, custom popup
+    var myPopup = $ionicPopup.show({
+      template: '<input type="text" ng-model="data.email">',
+      title: 'Enter Emaill Address To Share',
+      subTitle: 'We need a working email address',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel' },
+        {
+          text: '<b>Save</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            
+            if (!$scope.data.email) {
+              //don't allow the user to close unless he enters wifi password
+              e.preventDefault();
+            } else {
+              $scope.saveData(data, $scope.data.email, function() {
+                console.log("Saved data success");
+              })
+            }
+          }
+        },
+      ]
+    });
+    myPopup.then(function(res) {
+      console.log('Tapped!', res);
+    });
+    
+  }
+
 	$scope.savePop = function(){
 	  $scope.data = {}
 
 	  // An elaborate, custom popup
 	  var myPopup = $ionicPopup.show({
-	    template: '<input type="password" ng-model="data.wifi">',
-	    title: 'Enter Wi-Fi Password',
-	    subTitle: 'Please use normal things',
+	    template: '<input type="text" ng-model="data.email">',
+	    title: 'Enter Your Emaill Address',
+	    subTitle: 'We need an identity',
 	    scope: $scope,
 	    buttons: [
 	      { text: 'Cancel' },
@@ -17,12 +76,21 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
 	        text: '<b>Save</b>',
 	        type: 'button-positive',
 	        onTap: function(e) {
-	        	console.log('aaaaaa')
-	          if (!$scope.data.wifi) {
+	        	
+	          if (!$scope.data.email) {
 	            //don't allow the user to close unless he enters wifi password
 	            e.preventDefault();
 	          } else {
-	            return $scope.data.wifi;
+              $http.put(config.server + '/email', {data: $scope.data.email}).
+                success(function(data, status) {
+                  console.log("register email success", data);
+                  saveData($scope.working, null, function() {
+                     $scope.notification = "Saved email and working data success"
+                  });
+                }).
+                error(function(data, status) {
+                  console.log("fail", data);
+                });
 	          }
 	        }
 	      },

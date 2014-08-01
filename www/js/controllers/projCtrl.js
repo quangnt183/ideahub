@@ -1,6 +1,6 @@
 
-ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "working", '$http',
-	function($scope, $state, userData, appData, working, $http, PubNub){
+ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "working", '$http', '$timeout',
+	function($scope, $state, userData, appData, working, $http, $timeout, PubNub){
 
 
 	$scope.goProject = function(project){
@@ -17,8 +17,12 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
   * create a unique id for each session
   * until user enter an email, this id is used for communication
   */  
+  // if(!$scope.email) {
   var val = Math.floor(Math.random() * 100);
   console.log("val = ", val);
+  // } else {
+  //   var val = $scope.email;
+  // }
   
   var registerId = function() {
     $http.put(config.server + '/id', {data: val}).
@@ -30,27 +34,9 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
       });
   }
 
-  setTimeout(registerId, 100);
-
-
-  /*
-  * fire whenever user press Save to online
-  * need full data of current document to be assigned to data
-  */
-  $scope.saveDocument = function(val) {
-    data = {
-      x: 'x',
-      y: 'y'
-    }
-    $http.put(config.server + '/save', {data: data, ids: val}).
-      success(function(data, status) {
-        console.log("success", data);
-        $scope.notification = 'saved document successful';
-      }).
-      error(function(data, status) {
-        console.log("fail", data);
-      });
-  }
+  $timeout(registerId, 100);
+  
+  
   
   /*
   * auto subscribe to channel
@@ -66,7 +52,7 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
     message : function(m){ 
       console.log("receive data", m);
       $scope.$apply(function() {
-        $scope.notification = "a new update has been made to document <link>";
+        $scope.notification = "a new update has been made to document <a href='#'>abcdef</a>";
       });
 
     },
