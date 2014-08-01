@@ -2,6 +2,24 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
 	function($scope, $state, userData, working, $ionicPopup, $timeout){
 	$scope.curDoc = working.curDoc;
 	$scope.curProj = working.curProj;
+  $scope.curTool = 0; // 1, 2, 3 for comment, pen, eraser
+  $scope.toolBg = {};
+  $scope.selectTool = function(tool){
+    if (tool == $scope.curTool) $scope.curTool = 0;
+    else $scope.curTool = tool;
+    $scope.toolBg = {}; $scope.toolBg[tool] = {"background-color": "rgba(31,31,31,0.3"}
+  }
+
+  $scope.$on("tap", function(evt, mpChain){
+    if ($scope.curTool == 1) {
+      $scope.$broadcast("addComment", mpChain)
+    }
+  });
+  $scope.$on("move", function(evt, mpChain){
+    // if (mpChain.length == 2) addDraw(mpChain);
+  });
+
+
 	$scope.savePop = function(){
 	  $scope.data = {}
 
@@ -17,7 +35,6 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
 	        text: '<b>Save</b>',
 	        type: 'button-positive',
 	        onTap: function(e) {
-	        	console.log('aaaaaa')
 	          if (!$scope.data.wifi) {
 	            //don't allow the user to close unless he enters wifi password
 	            e.preventDefault();
@@ -40,31 +57,39 @@ directive("session", ["$timeout", "working", function($timeout, working){
   return {
     restrict: "E",
     link: function(scope, element){
-      var stage = document.tmp1= new Kinetic.Stage({
+      var stage = new Kinetic.Stage({
         container: element[0],
-        width: window.innerWidth - 64,
-        height: window.innerHeight - 44
       });
-      stage.add(scope.shapeLayer = new Kinetic.Layer());
-      angular.element(window).on("resize", function(){
-        stage.setWidth(window.innerWidth - 64);
-        stage.setHeight(window.innerHeight - 44);
-        stage.draw();
-      });
-
+      stage.add(scope.shapeLayer =document.tmp1=  new Kinetic.Layer());
       var img = new Image(), pageImage;
       img.src = working.curDoc.pages[0].image;
-      img.onload = function(){
+      var resize = img.onload = function(){
+        stage.setHeight(window.innerHeight - 44);
+        stage.setWidth(img.width * stage.getHeight() / img.height)
       	scope.shapeLayer.add(pageImage = new Kinetic.Image({
       		x: 0, y: 0,
       		height: stage.getHeight(),
-      		width: img.width * stage.getHeight() / img.height,
+      		width: stage.getWidth(),
       		image: img
       	}));
-      	pageImage.setX((stage.getWidth() - pageImage.getWidth()) / 2);
+        element.css("margin-left", (window.innerWidth - 64 - stage.getWidth())/ 2 + "px")
+      	// pageImage.setX((stage.getWidth() - pageImage.getWidth()) / 2);
       	scope.shapeLayer.draw();
       }
+      angular.element(window).on("resize", resize);
 
+      scope.$on("addComment", function(evt, mpChain){
+        console.log('aaa', mpChain)
+        var data = {
+          x: mpChain[0][0],
+          y: mpChain[0][1],
+          text: "abc"
+        }
+        var ss = scope.$new();
+        ss.data = data;
+        scope.shapeLayer.add(new Kinetic.Comment({scope: ss}));
+        scope.shapeLayer.draw();
+      });
       $timeout(function(){
         element.on("mouseup mousedown mousemove " + 
         "touchstart touchmove touchend", function(event){
@@ -79,13 +104,13 @@ directive("session", ["$timeout", "working", function($timeout, working){
       digestMouse = function(event){
         switch (event.type[5]) {
           case 'd': //mousedown
-            mpChain = [[event.pageX, event.pageY]];
+            mpChain = [[event.layerX, event.layerY]];
             mpChain["id"] = _u.uuid();
             mpChain["end"] = 'false';
             break;
           case 'm': //mousemove
             if (mpChain)
-              mpChain.push([event.pageX, event.pageY]);
+              mpChain.push([event.layerX, event.layerY]);
             break;
           case 'u': //mouseup
             if (mpChain)

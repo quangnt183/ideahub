@@ -11,10 +11,14 @@
 	</ion-header-bar>
 	<ion-content overflow-scroll="true" class="pages-content">
 		<div id="left-menu">
-			<img src="img/comment.svg"/>  
-			<img src="img/pen.svg"/>  
-			<img src="img/eraser.svg"/>  
-			<img src="img/pic.svg"/>  
+			<div style="background-image:url(img/comment.svg)" ng-click="selectTool(1)" ng-style="toolBg[1]"></div>
+			<hr></hr>
+			<div style="background-image:url(img/pen.svg)" ng-click="selectTool(2)" ng-style="toolBg[2]"></div>
+			<hr></hr>
+			<div style="background-image:url(img/eraser.svg)" ng-click="selectTool(3)" ng-style="toolBg[3]"></div>
+			<hr></hr>
+			<!-- <div style="background-image:url(img/pic.svg)"></div>
+			<hr></hr> -->
 		</div>
 		<session></session>
 	</ion-content>
@@ -49,11 +53,19 @@
 	border-right: 2px solid #4c16e1;
 	float: left;
 }
+#left-menu div {
+	width: 64px;
+	height: 48px;
+	background-position: center;
+	background-repeat: no-repeat;
+	
+}
+#left-menu hr {
+	background: #4c16e1;
+	border-bottom: 1px solid #4c16e1;
+	margin: 0 5px;
+}
 session {
 	float: left;
-}
-#left-menu>img {
-	border-bottom: 2px solid #4c16e1;
-	margin: 0px 7px;
 }
 </style>
