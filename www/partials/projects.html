@@ -7,9 +7,12 @@
       	<div class="buttons">
 	    	<img src="img/user-white.svg"/>  
 	    	<label>{{userData.email}}</label>
+        <input ng-model="val" type='text'>
+        <button ng-click="saveDocument(val)">Save</button>
 	    </div>
 	</ion-header-bar>
 	<ion-content overflow-scroll="true" class="proj-content">
+    {{ notification }}
 		<div class="project creator">
 			<div><div>
 				<img src="img/creator-icon.svg"/>
@@ -101,3 +104,5 @@
 	color: white;
 }
 </style>
+
+ 

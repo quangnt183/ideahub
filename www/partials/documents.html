@@ -18,6 +18,7 @@
 	<ion-content overflow-scroll="true" class="docs-content">
 		<div class="document creator">
 			<div>
+        <p>{{ notification }}
 				<h5>Add Image or PDF to create a Document</h5>
 			</div>
 			<div>
@@ -26,6 +27,7 @@
 		</div>
 		<div class="document" ng-repeat="document in curProj.docs">
 			<div ng-click="goDocument(document)">
+
 				<h5>{{document.name}}</h5>
 				<img src="{{document.pages[0].image}}" ng-show="document.pages[0].image"/>
 			</div>
@@ -36,6 +38,8 @@
 		</div>
 	</ion-content>
 </ion-view>
+
+
 <style>
 .docs-header, .docs-subheader {
 	border-bottom: 2px solid white !important;
@@ -111,3 +115,4 @@
 	text-align: center;
 }
 </style>
+
