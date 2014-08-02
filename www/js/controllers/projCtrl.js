@@ -66,8 +66,8 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
   goSub($scope.userData.email);
 
   var gogo = (function(m) {
-    working.curProj = m.projects[0];
-      working.curDoc = working.curProj.docs[0];
+    working.curProj =  m.project;
+      working.curDoc = m.doc;
       $state.transitionTo("pages");
   });
   var confirmPop = function(m) {
