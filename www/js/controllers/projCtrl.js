@@ -82,7 +82,7 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
       buttons: [
         { text: 'Cancel' },
         {
-          text: '<b>Save</b>',
+          text: '<b>OK</b>',
           type: 'button-positive',
           onTap: function(e) {
             
