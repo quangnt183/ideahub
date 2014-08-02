@@ -177,17 +177,7 @@ directive("session", ["$timeout", "working", function($timeout, working){
           scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
         }
       });
-      var page = working.curDoc.pages[0];
-      for (var i = 0; i < page.comments.length; i ++) {
-        var ss = scope.$new();
-        ss.data = page.comments[i];
-        scope.shapeLayer.add(new Kinetic.Comment({scope: ss}));  
-      }
-      for (var i = 0; i < page.draws.length; i ++) {
-        var ss = scope.$new();
-        ss.data = page.draws[i];
-        scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
-      }
+
       $timeout(function(){
         element.on("mouseup mousedown mousemove " + 
         "touchstart touchmove touchend", function(event){

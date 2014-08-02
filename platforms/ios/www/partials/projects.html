@@ -1,0 +1,108 @@
+<ion-view scroll="false">
+	<ion-header-bar class="bar-stable proj-header">
+		<label>Wokola</label>
+		<img src="img/header-arrow.svg"/>
+      	<label>Projects</label>
+      	<h1 class="title">&nbsp;</h1>
+      	<div class="buttons">
+	    	<img src="img/user-white.svg"/>  
+	    	<label>{{userData.email}}</label>
+        <input ng-model="val" type='text'>
+        <button ng-click="saveDocument(val)">Save</button>
+	    </div>
+	</ion-header-bar>
+	<ion-content overflow-scroll="true" class="proj-content">
+    {{ notification }}
+		<div class="project creator">
+			<div><div>
+				<img src="img/creator-icon.svg"/>
+				<div>Add Project</div>
+			</div></div>
+		</div>
+		<div class="project" ng-repeat="project in appData.projects">
+			<div>
+				<h5>{{project.name}}</h5>
+				<div ng-click="goProject(project)">
+					<div>
+						<img src="{{project.docs[0].pages[0].image}}" ng-show="project.docs[0].pages[0].image"/>
+					</div>
+				</div>
+				<div>
+					<img src="img/trash.svg"/>
+					<img src="img/archive.svg"/>
+				</div>
+			</div>
+		</div>
+	</ion-content>
+</ion-view>
+<style>
+.proj-header {
+	border-bottom: 2px solid white !important;
+}
+.proj-header label{
+	font-size: 23px;
+	color: white;
+	margin: 0px 5px;
+}
+.project {
+	float: left;
+	width: 33.3%;
+}
+.project>div {
+	margin: 1em;
+	border: 2px dashed #acacac;
+	background: white;
+}
+.project>div>h5 {
+	margin: 5px auto;
+	font-size: 23px;
+	color: #333;
+}
+.project>div>div:nth-child(2){
+	background-image: url(img/project.svg);
+	background-position: center;
+	height: 164px;
+	margin: auto;
+}
+.project>div>div:nth-child(2)>div {
+	position: absolute;
+	margin-top: 15px;
+}
+.project>div>div:nth-child(2)>div>img {
+	height: 144px;
+	margin: 0px auto;
+	display: table;
+	border: 1px solid white;
+}
+.project>div>div:nth-child(3) {
+	height: 32px;
+	margin: 5px auto;
+}
+.project>div>div:nth-child(3)>img {
+	float: right;
+}
+.project>div>div:nth-child(3)>img:last-child{
+	margin-right: 10px;	
+}
+.project>div>* , .project>div>div:nth-child(2)>div {
+	width: 290px;
+}
+.creator>div>div {
+	margin: 37px auto 42px auto;
+	background-image: url(img/project.svg);
+	background-position: center;
+	width: 256px;
+	height: 164px;
+}
+.creator>div>div>img {
+	margin: 38px 93px 0 93px;
+	width: 70px;
+}
+.creator>div>div>div {
+	text-align: center;
+	font-size: 23px;
+	color: white;
+}
+</style>
+
+ 
