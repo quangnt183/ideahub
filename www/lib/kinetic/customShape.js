@@ -149,7 +149,7 @@ Kinetic.DrawPath.prototype = {
 		Kinetic.Shape.call(this, config);
 		this.className = "DrawPath";
 		this.setAttrs({
-			stroke: "#333",
+			stroke: "#ff0000",
 			lineCap: "round",
 			lineJoin: "round",
 		});

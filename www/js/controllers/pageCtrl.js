@@ -1,5 +1,5 @@
-ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ionicPopup", "$timeout", "$http",
-	function($scope, $state, userData, working, $ionicPopup, $timeout, $http){
+ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "working", "$ionicPopup", "$timeout", "$http",
+	function($scope, $state, userData, appData, working, $ionicPopup, $timeout, $http){
 	$scope.curDoc = working.curDoc;
 	$scope.curProj = working.curProj;
   $scope.curTool = 0; // 1, 2, 3 for comment, pen, eraser
@@ -28,15 +28,8 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
   * need full data of current document to be assigned to data
   * if email is present -> share
   */
-  $scope.saveData = function(data, email, callback) {
-    if(!data)
-      // sample
-      data = {
-        x: 'x',
-        y: 'y'
-      }
-
-    $http.put(config.server + '/save', {page: data, email: email}).
+  $scope.saveData = function(email, callback) {
+    $http.put(config.server + '/save', {page: appData, email: email}).
       success(function(data, status) {
         console.log("save working data success", data);
         callback(data);
@@ -101,7 +94,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
               $http.put(config.server + '/email', {data: $scope.data.email}).
                 success(function(data, status) {
                   console.log("register email success", data);
-                  saveData($scope.working, null, function() {
+                  $scope.saveData(null, function() {
                      $scope.notification = "Saved email and working data success"
                   });
                 }).
