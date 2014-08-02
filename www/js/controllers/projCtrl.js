@@ -69,7 +69,7 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
     },
   })};
 
-  goSub(val);
+  // goSub(val);
 
   var gogo = (function(m) {
     working.curProj = m.projects[0];

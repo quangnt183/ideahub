@@ -98,6 +98,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
 	        text: '<b>Save</b>',
 	        type: 'button-positive',
 	        onTap: function(e) {
+            localStorage.appData = JSON.stringify(appData)
 	          if (!$scope.data.email) {
 	            //don't allow the user to close unless he enters wifi password
 	            e.preventDefault();
@@ -154,13 +155,24 @@ directive("session", ["$timeout", "working", function($timeout, working){
         element.css("margin-left", (window.innerWidth - 64 - w)/ 2 + "px")
         commentBack.css("left", 64 + (window.innerWidth - 64 - w)/ 2 + "px")
       }
-
+      var page = working.curDoc.pages[0];
+      
       img.onload = function(){
       	scope.shapeLayer.add(pageImage = new Kinetic.Image({
       		x: 0, y: 0,
       		image: img
       	}));
         resize();
+        for (var i = 0; i < page.comments.length; i ++) {
+          var ss = scope.$new();
+          ss.data = page.comments[i];
+          scope.shapeLayer.add(new Kinetic.Comment({scope: ss}));  
+        }
+        for (var i = 0; i < page.draws.length; i ++) {
+          var ss = scope.$new();
+          ss.data = page.draws[i];
+          scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
+        }
       	scope.shapeLayer.draw();
       }
       
@@ -191,17 +203,7 @@ directive("session", ["$timeout", "working", function($timeout, working){
           scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
         }
       });
-      var page = working.curDoc.pages[0];
-      for (var i = 0; i < page.comments.length; i ++) {
-        var ss = scope.$new();
-        ss.data = page.comments[i];
-        scope.shapeLayer.add(new Kinetic.Comment({scope: ss}));  
-      }
-      for (var i = 0; i < page.draws.length; i ++) {
-        var ss = scope.$new();
-        ss.data = page.draws[i];
-        scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
-      }
+      
       $timeout(function(){
         element.on("mouseup mousedown mousemove " + 
         "touchstart touchmove touchend", function(event){
