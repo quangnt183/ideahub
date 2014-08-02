@@ -16,7 +16,9 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
     }
   });
   $scope.$on("move", function(evt, mpChain){
-    // if (mpChain.length == 2) addDraw(mpChain);
+    if ($scope.curTool == 2) {
+      $scope.$broadcast("addDraw", mpChain) 
+    }
   });
 
 
@@ -63,33 +65,54 @@ directive("session", ["$timeout", "working", function($timeout, working){
       stage.add(scope.shapeLayer =document.tmp1=  new Kinetic.Layer());
       var img = new Image(), pageImage;
       img.src = working.curDoc.pages[0].image;
-      var resize = img.onload = function(){
-        stage.setHeight(window.innerHeight - 44);
-        stage.setWidth(img.width * stage.getHeight() / img.height)
+
+      var resize = function(){
+        var h = window.innerHeight - 44,
+        w = img.width * h / img.height;
+        
+        stage.setHeight(h);
+        stage.setWidth(w)
+        pageImage.setAttrs({
+          width: w, height: h
+        })
+        element.css("margin-left", (window.innerWidth - 64 - w)/ 2 + "px")
+      }
+
+      img.onload = function(){
       	scope.shapeLayer.add(pageImage = new Kinetic.Image({
       		x: 0, y: 0,
-      		height: stage.getHeight(),
-      		width: stage.getWidth(),
       		image: img
       	}));
-        element.css("margin-left", (window.innerWidth - 64 - stage.getWidth())/ 2 + "px")
-      	// pageImage.setX((stage.getWidth() - pageImage.getWidth()) / 2);
+        resize();
       	scope.shapeLayer.draw();
       }
+      
       angular.element(window).on("resize", resize);
 
       scope.$on("addComment", function(evt, mpChain){
-        console.log('aaa', mpChain)
         var data = {
-          x: mpChain[0][0],
-          y: mpChain[0][1],
+          ratioX: mpChain[0][0],
+          ratioY: mpChain[0][1],
           text: "abc"
         }
         var ss = scope.$new();
         ss.data = data;
         scope.shapeLayer.add(new Kinetic.Comment({scope: ss}));
-        scope.shapeLayer.draw();
       });
+      var curDrawId;
+      scope.$on("addDraw", function(evt, mpChain){
+        if (!curDrawId || curDrawId != mpChain.id) {
+          curDrawId = mpChain.id;
+          var data = {
+            ratios: mpChain,
+          }
+          var ss = scope.$new();
+          ss.data = data;
+          console.log(ss)
+          scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
+        }
+      });
+
       $timeout(function(){
         element.on("mouseup mousedown mousemove " + 
         "touchstart touchmove touchend", function(event){
@@ -104,13 +127,13 @@ directive("session", ["$timeout", "working", function($timeout, working){
       digestMouse = function(event){
         switch (event.type[5]) {
           case 'd': //mousedown
-            mpChain = [[event.layerX, event.layerY]];
+            mpChain = [[event.layerX / stage.getWidth(), event.layerY / stage.getHeight()]];
             mpChain["id"] = _u.uuid();
             mpChain["end"] = 'false';
             break;
           case 'm': //mousemove
             if (mpChain)
-              mpChain.push([event.layerX, event.layerY]);
+              mpChain.push([event.layerX / stage.getWidth(), event.layerY / stage.getHeight()]);
             break;
           case 'u': //mouseup
             if (mpChain)
