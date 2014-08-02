@@ -1,7 +1,10 @@
 ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "working", "$ionicPopup", "$timeout", "$http",
 	function($scope, $state, userData, appData, working, $ionicPopup, $timeout, $http){
-	$scope.curDoc = working.curDoc;
-	$scope.curProj = working.curProj;
+	if(!$scope.curDoc)
+    $scope.curDoc = working.curDoc;
+  if(!$scope.curProj)
+    $scope.curProj = working.curProj;
+	
   $scope.curTool = 0; // 1, 2, 3 for comment, pen, eraser
   $scope.toolBg = {};
   $scope.selectTool = function(tool){
@@ -23,13 +26,37 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
 
   $scope.notification = '';
 
+  $scope.sendmail = function() {
+    var canvas = document.querySelector("canvas");
+    var img    = canvas.toDataURL("image/png");
+    console.log('aaaa', img.substring(0,10));
+    var link = "mailto:me@example.com"
+             + "?cc=myCCaddress@example.com"
+             + "&subject=" + escape("This is my subject")
+             + "&body=" + img;
+             //+ "&body=" + escape(document.getElementById('myText').value)
+    
+
+    window.location.href = link;
+
+  }
+  
+
   /*
   * fire whenever user press Save to online
   * need full data of current document to be assigned to data
   * if email is present -> share
   */
   $scope.saveData = function(email, callback) {
-    $http.put(config.server + '/save', {page: appData, email: email}).
+    $scope.saveOnline('/save', email, callback);
+  }
+
+  $scope.shareData = function(email, callback) {
+    $scope.saveOnline('/share', email, callback);
+  }
+
+  $scope.saveOnline = function(action, email, callback)  {
+    $http.put(config.server + action, {page: appData, email: email}).
       success(function(data, status) {
         console.log("save working data success", data);
         callback(data);
@@ -38,6 +65,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
         console.log("fail", data);
       });
   }
+
 
   $scope.sharePop = function() {
     $scope.data = {}
@@ -59,8 +87,8 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
               //don't allow the user to close unless he enters wifi password
               e.preventDefault();
             } else {
-              $scope.saveData(data, $scope.data.email, function() {
-                console.log("Saved data success");
+              $scope.shareData($scope.data.email, function() {
+                console.log("Saved and share data success");
               })
             }
           }
@@ -84,14 +112,15 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
 	        text: '<b>Save</b>',
 	        type: 'button-positive',
 	        onTap: function(e) {
+            localStorage.appData = JSON.stringify(appData)
 	          if (!$scope.data.email) {
 	            //don't allow the user to close unless he enters wifi password
 	            e.preventDefault();
 	          } else {
-              $http.put(config.server + '/email', {data: $scope.data.email}).
+              $http.put(config.server + '/email', {email: $scope.data.email}).
                 success(function(data, status) {
                   console.log("register email success", data);
-                  $scope.saveData(null, function() {
+                  $scope.saveData($scope.data.email, function() {
                      $scope.notification = "Saved email and working data success"
                   });
                 }).
@@ -140,13 +169,24 @@ directive("session", ["$timeout", "working", function($timeout, working){
         element.css("margin-left", (window.innerWidth - 64 - w)/ 2 + "px")
         commentBack.css("left", 64 + (window.innerWidth - 64 - w)/ 2 + "px")
       }
-
+      var page = working.curDoc.pages[0];
+      
       img.onload = function(){
       	scope.shapeLayer.add(pageImage = new Kinetic.Image({
       		x: 0, y: 0,
       		image: img
       	}));
         resize();
+        for (var i = 0; i < page.comments.length; i ++) {
+          var ss = scope.$new();
+          ss.data = page.comments[i];
+          scope.shapeLayer.add(new Kinetic.Comment({scope: ss}));  
+        }
+        for (var i = 0; i < page.draws.length; i ++) {
+          var ss = scope.$new();
+          ss.data = page.draws[i];
+          scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
+        }
       	scope.shapeLayer.draw();
       }
       
@@ -177,7 +217,7 @@ directive("session", ["$timeout", "working", function($timeout, working){
           scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
         }
       });
-
+      
       $timeout(function(){
         element.on("mouseup mousedown mousemove " + 
         "touchstart touchmove touchend", function(event){

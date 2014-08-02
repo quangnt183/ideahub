@@ -6,13 +6,12 @@
       	<h1 class="title">&nbsp;</h1>
       	<div class="buttons">
 	    	<img src="img/user-white.svg"/>  
-	    	<label>{{userData.email}}</label>
-        <input ng-model="val" type='text'>
-        <button ng-click="saveDocument(val)">Save</button>
+        <input id='account' ng-model="userData.email" type='text' style='width: 100px;' ng-blur="registerEmail()">
+        
 	    </div>
 	</ion-header-bar>
 	<ion-content overflow-scroll="true" class="proj-content">
-    {{ notification }}
+    <div style='color: red;' ng-show="notification">you got an updated <a href="{{ notification }}">click here</a></div>
 		<div class="project creator">
 			<div><div>
 				<img src="img/creator-icon.svg"/>
@@ -100,6 +99,12 @@
 }
 .creator>div>div>div {
 	text-align: center;
+	font-size: 23px;
+	color: white;
+}
+#account {
+	width: 150px;
+	background: transparent;
 	font-size: 23px;
 	color: white;
 }

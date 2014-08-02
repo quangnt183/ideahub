@@ -15,15 +15,9 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
   * create a unique id for each session
   * until user enter an email, this id is used for communication
   */  
-  if(!$scope.userData.email) {
-    var val = Math.floor(Math.random() * 100);
-    console.log("val = ", val);
-  } else {
-    var val = $scope.userData.email;
-  }
-  
+
   var registerId = function() {
-    $http.put(config.server + '/id', {data: val}).
+    $http.put(config.server + '/id', {data: $scope.userData.email}).
       success(function(data, status) {
         console.log("register id success", data);
       }).
@@ -34,8 +28,8 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
 
   $timeout(registerId, 100);
 
-  $scope.registerEmail = function(val) {
-    $http.put(config.server + '/email', {email: val}).
+  $scope.registerEmail = function() {
+    $http.put(config.server + '/email', {email: $scope.userData.email}).
       success(function(data, status) {
         console.log("register email success", data);
         goSub(data.registerEmail);
@@ -69,7 +63,7 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
     },
   })};
 
-  // goSub(val);
+  goSub($scope.userData.email);
 
   var gogo = (function(m) {
     working.curProj = m.projects[0];

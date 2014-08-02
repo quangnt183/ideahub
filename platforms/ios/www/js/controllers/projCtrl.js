@@ -1,31 +1,23 @@
 
-ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "working", '$http', '$timeout',
-	function($scope, $state, userData, appData, working, $http, $timeout, PubNub){
-
-
+ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "working", '$http', '$timeout', "$ionicPopup",
+	function($scope, $state, userData, appData, working, $http, $timeout, $ionicPopup, PubNub){
+  
 	$scope.goProject = function(project){
-
 		working.curProj = project;
 		$state.transitionTo("documents");
 	}
 
 	$scope.userData = userData;
 	$scope.appData = document.tmp10 = appData;
-  $scope.notification = 'notification';
+  $scope.notification = '';
   
   /*
   * create a unique id for each session
   * until user enter an email, this id is used for communication
   */  
-  // if(!$scope.email) {
-  var val = Math.floor(Math.random() * 100);
-  console.log("val = ", val);
-  // } else {
-  //   var val = $scope.email;
-  // }
-  
+
   var registerId = function() {
-    $http.put(config.server + '/id', {data: val}).
+    $http.put(config.server + '/id', {data: $scope.userData.email}).
       success(function(data, status) {
         console.log("register id success", data);
       }).
@@ -35,8 +27,19 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
   }
 
   $timeout(registerId, 100);
-  
-  
+
+  $scope.registerEmail = function() {
+    $http.put(config.server + '/email', {email: $scope.userData.email}).
+      success(function(data, status) {
+        console.log("register email success", data);
+        goSub(data.registerEmail);
+        alertPop();
+      }).
+      error(function(data, status) {
+        console.log("fail", data);
+      });
+  }
+
   
   /*
   * auto subscribe to channel
@@ -46,15 +49,83 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
     publish_key   : "pub-c-8f3f9072-f2ea-4797-978c-0ae8279e4d9e",
     subscribe_key : "sub-c-13492cec-9330-11e3-b381-02ee2ddab7fe"
   });
-      
-  pubnub.subscribe({
-    channel : val,
+  
+  var goSub = function(channel) {
+    pubnub.subscribe({
+    channel : channel,
     message : function(m){ 
-      console.log("receive data", m);
-      $scope.$apply(function() {
-        $scope.notification = "a new update has been made to document <a href='#'>abcdef</a>";
-      });
-
+      console.log("receive data", m, channel);
+      //$scope.$apply(function() {
+        //$scope.notification = "http://localhost:7004/#/pages";
+      confirmPop(m);
+      
+      //});
     },
+  })};
+
+  goSub($scope.userData.email);
+
+  var gogo = (function(m) {
+    working.curProj = m.projects[0];
+      working.curDoc = working.curProj.docs[0];
+      $state.transitionTo("pages");
   });
+  var confirmPop = function(m) {
+    $scope.data = {}
+
+    // An elaborate, custom popup
+    var myPopup = $ionicPopup.show({
+      template: '<input type="text" ng-model="data.email">',
+      title: 'Type ok to go to updated pate',
+      subTitle: 'be sure to be okay',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel' },
+        {
+          text: '<b>Save</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            
+            if (!$scope.data.email) {
+              //don't allow the user to close unless he enters wifi password
+              e.preventDefault();
+            } else {
+              gogo(m);
+            }
+          }
+        },
+      ]
+    });
+    myPopup.then(function(res) {
+      console.log('go go go!', res);
+    });
+    
+  }
+  
+  var alertPop = function() {
+    $scope.data = {}
+
+    // An elaborate, custom popup
+    var myPopup = $ionicPopup.show({
+      
+      title: 'Register ID successful',
+      subTitle: 'it would be awesome',
+      scope: $scope,
+      buttons: [
+        
+        {
+          text: '<b>OK</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            console.log('okey');
+            
+          }
+        },
+      ]
+    });
+    myPopup.then(function(res) {
+      console.log('go go go!', res);
+    });
+    
+  }
 }]);
