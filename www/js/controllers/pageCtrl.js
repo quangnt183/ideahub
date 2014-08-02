@@ -47,7 +47,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
               //don't allow the user to close unless he enters wifi password
               e.preventDefault();
             } else {
-              $scope.saveData(data, $scope.data.email, function() {
+              $scope.saveData($scope.data, $scope.data.email, function() {
                 console.log("Saved data success");
               })
             }

@@ -1,4 +1,4 @@
 node_modules/
-app.js
-app.coffee
-package.json
+./app.js
+./app.coffee
+./package.json
