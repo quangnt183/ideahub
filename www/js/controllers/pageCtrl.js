@@ -1,7 +1,26 @@
-ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ionicPopup", "$timeout", "$http",
-	function($scope, $state, userData, working, $ionicPopup, $timeout, $http){
+ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "working", "$ionicPopup", "$timeout", "$http",
+	function($scope, $state, userData, appData, working, $ionicPopup, $timeout, $http){
 	$scope.curDoc = working.curDoc;
 	$scope.curProj = working.curProj;
+  $scope.curTool = 0; // 1, 2, 3 for comment, pen, eraser
+  $scope.toolBg = {};
+  $scope.selectTool = function(tool){
+    if (tool == $scope.curTool) $scope.curTool = 0;
+    else $scope.curTool = tool;
+    $scope.toolBg = {}; $scope.toolBg[tool] = {"background-color": "rgba(31,31,31,0.3"}
+  }
+
+  $scope.$on("tap", function(evt, mpChain){
+    if ($scope.curTool == 1) {
+      $scope.$broadcast("addComment", mpChain)
+    }
+  });
+  $scope.$on("move", function(evt, mpChain){
+    if ($scope.curTool == 2) {
+      $scope.$broadcast("addDraw", mpChain) 
+    }
+  });
+
   $scope.notification = '';
 
   /*
@@ -9,15 +28,8 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
   * need full data of current document to be assigned to data
   * if email is present -> share
   */
-  $scope.saveData = function(data, email, callback) {
-    if(!data)
-      // sample
-      data = {
-        x: 'x',
-        y: 'y'
-      }
-
-    $http.put(config.server + '/save', {page: data, email: email}).
+  $scope.saveData = function(email, callback) {
+    $http.put(config.server + '/save', {page: appData, email: email}).
       success(function(data, status) {
         console.log("save working data success", data);
         callback(data);
@@ -60,7 +72,6 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
     });
     
   }
-
 	$scope.savePop = function(){
 	  $scope.data = {}
 
@@ -76,7 +87,6 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
 	        text: '<b>Save</b>',
 	        type: 'button-positive',
 	        onTap: function(e) {
-	        	
 	          if (!$scope.data.email) {
 	            //don't allow the user to close unless he enters wifi password
 	            e.preventDefault();
@@ -84,7 +94,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "working", "$ion
               $http.put(config.server + '/email', {data: $scope.data.email}).
                 success(function(data, status) {
                   console.log("register email success", data);
-                  saveData($scope.working, null, function() {
+                  $scope.saveData(null, function() {
                      $scope.notification = "Saved email and working data success"
                   });
                 }).
@@ -108,30 +118,59 @@ directive("session", ["$timeout", "working", function($timeout, working){
   return {
     restrict: "E",
     link: function(scope, element){
-      var stage = document.tmp1= new Kinetic.Stage({
+      var stage = new Kinetic.Stage({
         container: element[0],
-        width: window.innerWidth - 64,
-        height: window.innerHeight - 44
       });
-      stage.add(scope.shapeLayer = new Kinetic.Layer());
-      angular.element(window).on("resize", function(){
-        stage.setWidth(window.innerWidth - 64);
-        stage.setHeight(window.innerHeight - 44);
-        stage.draw();
-      });
-
+      stage.add(scope.shapeLayer =document.tmp1=  new Kinetic.Layer());
       var img = new Image(), pageImage;
       img.src = working.curDoc.pages[0].image;
+
+      var resize = function(){
+        var h = window.innerHeight - 44,
+        w = img.width * h / img.height;
+        
+        stage.setHeight(h);
+        stage.setWidth(w)
+        pageImage.setAttrs({
+          width: w, height: h
+        })
+        element.css("margin-left", (window.innerWidth - 64 - w)/ 2 + "px")
+      }
+
       img.onload = function(){
       	scope.shapeLayer.add(pageImage = new Kinetic.Image({
       		x: 0, y: 0,
-      		height: stage.getHeight(),
-      		width: img.width * stage.getHeight() / img.height,
       		image: img
       	}));
-      	pageImage.setX((stage.getWidth() - pageImage.getWidth()) / 2);
+        resize();
       	scope.shapeLayer.draw();
       }
+      
+      angular.element(window).on("resize", resize);
+
+      scope.$on("addComment", function(evt, mpChain){
+        var data = {
+          ratioX: mpChain[0][0],
+          ratioY: mpChain[0][1],
+          text: "abc"
+        }
+        var ss = scope.$new();
+        ss.data = data;
+        scope.shapeLayer.add(new Kinetic.Comment({scope: ss}));
+      });
+      var curDrawId;
+      scope.$on("addDraw", function(evt, mpChain){
+        if (!curDrawId || curDrawId != mpChain.id) {
+          curDrawId = mpChain.id;
+          var data = {
+            ratios: mpChain,
+          }
+          var ss = scope.$new();
+          ss.data = data;
+          console.log(ss)
+          scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
+        }
+      });
 
       $timeout(function(){
         element.on("mouseup mousedown mousemove " + 
@@ -147,13 +186,13 @@ directive("session", ["$timeout", "working", function($timeout, working){
       digestMouse = function(event){
         switch (event.type[5]) {
           case 'd': //mousedown
-            mpChain = [[event.pageX, event.pageY]];
+            mpChain = [[event.layerX / stage.getWidth(), event.layerY / stage.getHeight()]];
             mpChain["id"] = _u.uuid();
             mpChain["end"] = 'false';
             break;
           case 'm': //mousemove
             if (mpChain)
-              mpChain.push([event.pageX, event.pageY]);
+              mpChain.push([event.layerX / stage.getWidth(), event.layerY / stage.getHeight()]);
             break;
           case 'u': //mouseup
             if (mpChain)
