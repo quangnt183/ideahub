@@ -1,11 +1,11 @@
 <ion-view scroll="false">
 	<ion-header-bar class="bar-stable pages-header">
-		<label>{{curProj.name}}</label>
+		<label ng-click="goDocs()">{{curProj.name}}</label>
 		<img src="img/header-arrow.svg"/>
       	<label>{{curDoc.name}}</label>
       	<h1 class="title">&nbsp;</h1>
       	<div class="buttons">
-      	<div id="save-btn" ng-click="sendmail()"></div>
+      	<div id="email-btn" ng-click="sendmail()"></div>
       	<div id="save-btn" ng-click="savePop()"></div>
 	    	<div id="share-btn" ng-click="sharePop()"></div>
 	    </div>
@@ -41,6 +41,14 @@
 	width: 40px;
 	height: 30px;
 	border-left: 2px solid white;
+}
+#email-btn {
+	background-image: url(img/email.svg);
+	background-position: center;
+	width: 50px;
+	height: 30px;
+	border-left: 2px solid white;
+	background-size: 120%;
 }
 #save-btn {
 	background-image: url(img/save.svg);

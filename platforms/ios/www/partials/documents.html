@@ -1,6 +1,6 @@
 <ion-view scroll="true">
 	<ion-header-bar class="bar-stable docs-header">
-		<label>Projects</label>
+		<label ng-click="goProject()">Projects</label>
 		<img src="img/header-arrow.svg"/>
       	<label>{{curProj.name}}</label>
       	<!-- <div id="docs-down-arrow"><img src="img/down-arrow.svg"/></div> -->
@@ -43,6 +43,12 @@
 <style>
 .docs-header, .docs-subheader {
 	border-bottom: 2px solid white !important;
+}
+.platform-ipad .docs-subheader {
+	top: 64px !important
+}
+.platform-ipad .docs-subheader>* {
+	margin-top: 0px !important;
 }
 .docs-header label, .docs-subheader label{
 	font-size: 23px;

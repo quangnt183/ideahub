@@ -12,7 +12,9 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
     else $scope.curTool = tool;
     $scope.toolBg = {}; $scope.toolBg[tool] = {"background-color": "rgba(31,31,31,0.3"}
   }
-
+  $scope.goDocs = function(doc){
+    $state.transitionTo("documents");
+  }
   $scope.$on("tap", function(evt, mpChain){
     if ($scope.curTool == 1) {
       $scope.$broadcast("addComment", mpChain)
@@ -29,16 +31,16 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
   $scope.sendmail = function() {
     var canvas = document.querySelector("canvas");
     var img    = canvas.toDataURL("image/png");
-    console.log('aaaa', img.substring(0,10));
-    var link = "mailto:me@example.com"
-             + "?cc=myCCaddress@example.com"
-             + "&subject=" + escape("This is my subject")
-             + "&body=" + img;
-             //+ "&body=" + escape(document.getElementById('myText').value)
+    // var link = "mailto:joe@example.com"
+    //          + "?cc=hoang@ideahub.com"
+    //          + "&subject=" + escape(working.curDoc.name)
+    //          + "&body=<img src='" + img + "'/>";
+    //          //+ "&body=" + escape(document.getElementById('myText').value)
     
 
-    window.location.href = link;
+    // window.location.href = link;
 
+    window.open(img, "_blank");
   }
   
 
@@ -79,7 +81,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
       buttons: [
         { text: 'Cancel' },
         {
-          text: '<b>Save</b>',
+          text: '<b>Share</b>',
           type: 'button-positive',
           onTap: function(e) {
             
@@ -103,7 +105,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
 	  // An elaborate, custom popup
 	  var myPopup = $ionicPopup.show({
 	    template: '<input type="text" ng-model="data.email">',
-	    title: 'Enter Your Emaill Address',
+	    title: 'Enter Your Email Address',
 	    subTitle: 'We need an identity',
 	    scope: $scope,
 	    buttons: [
@@ -162,7 +164,7 @@ directive("session", ["$timeout", "working", function($timeout, working){
         w = img.width * h / img.height;
         
         stage.setHeight(h);
-        stage.setWidth(w)
+        stage.setWidth(w - 10)
         pageImage.setAttrs({
           width: w, height: h
         })
@@ -226,12 +228,14 @@ directive("session", ["$timeout", "working", function($timeout, working){
       }, 100);
       var mpChain;
       var eat = function(event){
-        if (event.type[0] == 'm') digestMouse(event);
-        else digestTouch(event);
+        digestMouse(event);
+        // if (event.type[0] == 'm') 
+        // else digestTouch(event);
       },
       digestMouse = function(event){
         switch (event.type[5]) {
           case 'd': //mousedown
+          case 's':
             mpChain = [[event.layerX / stage.getWidth(), event.layerY / stage.getHeight()]];
             mpChain["id"] = _u.uuid();
             mpChain["end"] = 'false';
@@ -241,6 +245,7 @@ directive("session", ["$timeout", "working", function($timeout, working){
               mpChain.push([event.layerX / stage.getWidth(), event.layerY / stage.getHeight()]);
             break;
           case 'u': //mouseup
+          case 'e':
             if (mpChain)
               mpChain['end'] = 'true';
             break;

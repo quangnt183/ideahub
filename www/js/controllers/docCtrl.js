@@ -6,5 +6,7 @@ ideahub.controller("docCtrl", ["$scope", "$state", "userData", "working", "$http
 		working.curDoc = doc;
 		$state.transitionTo("pages");
 	}
-
+	$scope.goProject = function(doc){
+		$state.transitionTo("projects");
+	}
 }]);
