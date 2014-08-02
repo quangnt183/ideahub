@@ -121,10 +121,15 @@ directive("session", ["$timeout", "working", function($timeout, working){
       var stage = new Kinetic.Stage({
         container: element[0],
       });
+      document.tmp4 = working;
       stage.add(scope.shapeLayer =document.tmp1=  new Kinetic.Layer());
-      var img = new Image(), pageImage;
+      var img = new Image(), pageImage,
+      commentBack = angular.element(document.querySelector("#comment-back"));
       img.src = working.curDoc.pages[0].image;
-
+      commentBack.on("click", function(){
+        angular.element(document.querySelectorAll(".comment")).css("display", "none");
+        commentBack.css("display", "none");
+      });
       var resize = function(){
         var h = window.innerHeight - 44,
         w = img.width * h / img.height;
@@ -135,6 +140,7 @@ directive("session", ["$timeout", "working", function($timeout, working){
           width: w, height: h
         })
         element.css("margin-left", (window.innerWidth - 64 - w)/ 2 + "px")
+        commentBack.css("left", 64 + (window.innerWidth - 64 - w)/ 2 + "px")
       }
 
       img.onload = function(){
@@ -152,10 +158,11 @@ directive("session", ["$timeout", "working", function($timeout, working){
         var data = {
           ratioX: mpChain[0][0],
           ratioY: mpChain[0][1],
-          text: "abc"
+          comments: [],
         }
         var ss = scope.$new();
         ss.data = data;
+        working.curDoc.pages[0].comments.push(data);
         scope.shapeLayer.add(new Kinetic.Comment({scope: ss}));
       });
       var curDrawId;
@@ -167,6 +174,7 @@ directive("session", ["$timeout", "working", function($timeout, working){
           }
           var ss = scope.$new();
           ss.data = data;
+          working.curDoc.pages[0].draws.push(data);
           console.log(ss)
           scope.shapeLayer.add(new Kinetic.DrawPath({scope: ss}));  
         }

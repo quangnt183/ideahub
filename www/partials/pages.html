@@ -21,6 +21,7 @@
 			<hr></hr> -->
 		</div>
 		<session></session>
+		<div id="comment-back"></div>
 	</ion-content>
 </ion-view>
 <style>
@@ -68,7 +69,26 @@
 session {
 	float: left;
 }
-session .comment {
+.comment {
 	position: absolute;
+	width: 200px;
+	padding: 5px;
+	border: 2px solid #333;
+	border-radius: 10px;
+	margin-top: 50px;
+	background: #d8dae4;
+}
+.comment input{
+	background: white;
+	border: 1px solid #f9f9f9;
+}
+#comment-back {
+	position: fixed;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	display: none;
+	background: rgba(3,3,3,0.3);
 }
 </style>
