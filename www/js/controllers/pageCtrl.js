@@ -26,6 +26,20 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
 
   $scope.notification = '';
 
+  $scope.sendmail = function() {
+    var canvas = document.querySelector("canvas");
+    var img    = canvas.toDataURL("image/png");
+    console.log('aaaa', img.substring(0,10));
+    var link = "mailto:me@example.com"
+             + "?cc=myCCaddress@example.com"
+             + "&subject=" + escape("This is my subject")
+             + "&body=" + img;
+             //+ "&body=" + escape(document.getElementById('myText').value)
+    
+
+    window.location.href = link;
+
+  }
   
 
   /*
