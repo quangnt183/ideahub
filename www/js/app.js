@@ -13,6 +13,10 @@ var ideahub = angular.module('ideahub', ['ionic', 'pubnub.angular.service'])
       url: '/pages',
       templateUrl: 'partials/pages.html',
       controller: 'pageCtrl'
+    }).state('updatepages', {
+      url: '/update-pages',
+      templateUrl: 'partials/pages.html',
+      controller: 'pageCtrl'
     });
   $urlRouterProvider.otherwise("/projects");
 })

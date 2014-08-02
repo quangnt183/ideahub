@@ -2,7 +2,7 @@
 ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "working", '$http', '$timeout',
 	function($scope, $state, userData, appData, working, $http, $timeout, PubNub){
 
-
+  
 	$scope.goProject = function(project){
 
 		working.curProj = project;
@@ -11,18 +11,18 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
 
 	$scope.userData = userData;
 	$scope.appData = appData;
-  $scope.notification = 'notification';
+  $scope.notification = '';
   
   /*
   * create a unique id for each session
   * until user enter an email, this id is used for communication
   */  
-  // if(!$scope.email) {
-  var val = Math.floor(Math.random() * 100);
-  console.log("val = ", val);
-  // } else {
-  //   var val = $scope.email;
-  // }
+  if(!$scope.userData.email) {
+    var val = Math.floor(Math.random() * 100);
+    console.log("val = ", val);
+  } else {
+    var val = $scope.userData.email;
+  }
   
   var registerId = function() {
     $http.put(config.server + '/id', {data: val}).
@@ -35,8 +35,18 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
   }
 
   $timeout(registerId, 100);
-  
-  
+
+  $scope.registerEmail = function(val) {
+    $http.put(config.server + '/email', {email: val}).
+      success(function(data, status) {
+        console.log("register email success", data);
+        goSub(data.registerEmail);
+      }).
+      error(function(data, status) {
+        console.log("fail", data);
+      });
+  }
+
   
   /*
   * auto subscribe to channel
@@ -46,15 +56,22 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
     publish_key   : "pub-c-8f3f9072-f2ea-4797-978c-0ae8279e4d9e",
     subscribe_key : "sub-c-13492cec-9330-11e3-b381-02ee2ddab7fe"
   });
-      
-  pubnub.subscribe({
-    channel : val,
+  
+  var goSub = function(channel) {
+    pubnub.subscribe({
+    channel : channel,
     message : function(m){ 
-      console.log("receive data", m);
+      console.log("receive data", m, channel);
       $scope.$apply(function() {
-        $scope.notification = "a new update has been made to document <a href='#'>abcdef</a>";
+        $scope.notification = "http://localhost:7004/#/pages";
       });
 
     },
-  });
+  })};
+
+  goSub(val);
+
+  
+  
+  
 }]);

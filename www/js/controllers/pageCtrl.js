@@ -23,13 +23,23 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
 
   $scope.notification = '';
 
+  
+
   /*
   * fire whenever user press Save to online
   * need full data of current document to be assigned to data
   * if email is present -> share
   */
   $scope.saveData = function(email, callback) {
-    $http.put(config.server + '/save', {page: appData, email: email}).
+    $scope.saveOnline('/save', email, callback);
+  }
+
+  $scope.shareData = function(email, callback) {
+    $scope.saveOnline('/share', email, callback);
+  }
+
+  $scope.saveOnline = function(action, email, callback)  {
+    $http.put(config.server + action, {page: appData, email: email}).
       success(function(data, status) {
         console.log("save working data success", data);
         callback(data);
@@ -38,6 +48,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
         console.log("fail", data);
       });
   }
+
 
   $scope.sharePop = function() {
     $scope.data = {}
@@ -59,8 +70,8 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
               //don't allow the user to close unless he enters wifi password
               e.preventDefault();
             } else {
-              $scope.saveData($scope.data, $scope.data.email, function() {
-                console.log("Saved data success");
+              $scope.shareData($scope.data.email, function() {
+                console.log("Saved and share data success");
               })
             }
           }
@@ -68,7 +79,7 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
       ]
     });
     myPopup.then(function(res) {
-      console.log('Tapped!', res);
+      console.log('shared!', res);
     });
     
   }
@@ -91,10 +102,10 @@ ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "work
 	            //don't allow the user to close unless he enters wifi password
 	            e.preventDefault();
 	          } else {
-              $http.put(config.server + '/email', {data: $scope.data.email}).
+              $http.put(config.server + '/email', {email: $scope.data.email}).
                 success(function(data, status) {
                   console.log("register email success", data);
-                  $scope.saveData(null, function() {
+                  $scope.saveData($scope.data.email, function() {
                      $scope.notification = "Saved email and working data success"
                   });
                 }).
