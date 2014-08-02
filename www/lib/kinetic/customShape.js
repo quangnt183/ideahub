@@ -11,12 +11,13 @@ Kinetic.Comment.prototype = {
 	},
 	render: function(){
 		var scope = this.getScope(), data = scope.data;
-		var dw = 200, dh = 50;
+		var dw = 200, dh = 50, self = this,
+		commentBack = angular.element(document.querySelector("#comment-back"));
 		this.setDraggable(true);
 		this.add(this._rect = new Kinetic.Rect({
 			width: dw,
 			height: dh,
-			stroke: "#333",
+			stroke: "#ff0000",
 			cornerRadius: 10,
 			fill: "rgba(200,200,200,0.6)"
 		}));
@@ -25,23 +26,34 @@ Kinetic.Comment.prototype = {
 			y: 5,
 			width: dw - 10,
 			height: dh - 10,
-			text: data.text,
+			text: data.comments.length > 0?data.comments[0] : "",
 			fontSize: 20,
-			fill: "#333",
+			fill: "#ff0000",
 		}));
 		if (!this.html) {
+			var input;
 			this.html = angular.element("<div class='comment'/>");
 			if (data.comments)
 				for (var i = 0; i < data.comments.length; i ++)
-					this.html.append(angular.element("<div>" +data.comments[i]+ "</div>"));
-			this.html.append(angular.element("<input type='text' placeHolder='add comment'/>"));
-			this.html.on("click", function(evt){
-				event.preventDefault();
-				return false;
-			})
+					this.html.append(angular.element("<input type='text' value='" +data.comments[i]+ "' data='" +i+ "'/>"));
+			this.html.append(input = angular.element("<input type='text' placeHolder='add comment'/>"));
+			var inputHandler = function(){
+				if (data.comments.length == 0 || input.attr("data") == 0) {
+					input.attr("data", 0);
+					self._text.setText(input.val());
+					self.getLayer().draw();
+				}
+				data.comments[input.attr("data")] = input.val();
+			}
+			var blurHandler = function(){
+				input.off("input");
+				self.html.append(input = angular.element("<input type='text' placeHolder='add comment'/>"));
+				input.on("input", inputHandler);
+				input.on("blur", blurHandler);
+			}
+			input.on("input", inputHandler);
+			input.on("blur", blurHandler);
 		}
-		
-		var self = this;
 		setTimeout(function(){
 			if (self.getStage()) {
 				var sw = self.getStage().getWidth(),
@@ -58,31 +70,33 @@ Kinetic.Comment.prototype = {
 		}, 100);
 		this.on("click tap", function(event){
 			event.cancelBubble = true;
-			scope.editable = true;
+			if (self.html.parent().length == 0)
+				commentBack.append(self.html);
+			var curPos = self.getCurPos();
+			self.html.css("top", curPos.y + "px");
+			self.html.css("left", curPos.x + "px");
+			self.html.css("display", "block");
+			commentBack.css("display", "block");
+			input[0].focus();
 		});
 	},
 	eventHandler: function(){
 		var scope = this.getScope(), data = scope.data, self = this;
 		this.setDragBoundFunc(function(pos){
 			var sw = self.getStage().getWidth(),
-				sh = self.getStage().getHeight(),
-				element = document.querySelector("session");
+				sh = self.getStage().getHeight();
 			data.ratioX = pos.x / sw;
 			data.ratioY = pos.y / sh;
-			self.html.css("top", element.offsetTop + pos.y +  "px")
-			self.html.css("left", element.offsetLeft + pos.x + "px")
 			return pos;
 		});
 		scope.$watch("curTool", function(){
 			self.setDraggable(scope.curTool == 1)
 		});
-		scope.$watch("editable", function(){
-			if (scope.editable) {
-				if (self.html.parent().length == 0)
-					angular.element(document.querySelector("session")).append(self.html);
-				self.html.css("display", "block");
-			} else self.html.css("display", "none");
-		})
+	},
+	getCurPos: function(){
+		var stage = this.getStage(), data = this.getScope().data;
+		return {x: stage.getWidth() * data.ratioX,
+				y: stage.getHeight() * data.ratioY}
 	}
 };
 Kinetic.Util.extend(Kinetic.Comment, Kinetic.Group);
