@@ -1,10 +1,8 @@
 
-ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "working", '$http', '$timeout',
-	function($scope, $state, userData, appData, working, $http, $timeout, PubNub){
-
+ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "working", '$http', '$timeout', "$ionicPopup",
+	function($scope, $state, userData, appData, working, $http, $timeout, $ionicPopup, PubNub){
   
 	$scope.goProject = function(project){
-
 		working.curProj = project;
 		$state.transitionTo("documents");
 	}
@@ -41,6 +39,7 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
       success(function(data, status) {
         console.log("register email success", data);
         goSub(data.registerEmail);
+        alertPop();
       }).
       error(function(data, status) {
         console.log("fail", data);
@@ -62,16 +61,77 @@ ideahub.controller("projCtrl", ["$scope", "$state", "userData", "appData", "work
     channel : channel,
     message : function(m){ 
       console.log("receive data", m, channel);
-      $scope.$apply(function() {
-        $scope.notification = "http://localhost:7004/#/pages";
-      });
-
+      //$scope.$apply(function() {
+        //$scope.notification = "http://localhost:7004/#/pages";
+      confirmPop(m);
+      
+      //});
     },
   })};
 
   goSub(val);
 
+  var gogo = (function(m) {
+    working.curProj = m.projects[0];
+      working.curDoc = working.curProj.docs[0];
+      $state.transitionTo("pages");
+  });
+  var confirmPop = function(m) {
+    $scope.data = {}
+
+    // An elaborate, custom popup
+    var myPopup = $ionicPopup.show({
+      template: '<input type="text" ng-model="data.email">',
+      title: 'Type ok to go to updated pate',
+      subTitle: 'be sure to be okay',
+      scope: $scope,
+      buttons: [
+        { text: 'Cancel' },
+        {
+          text: '<b>Save</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            
+            if (!$scope.data.email) {
+              //don't allow the user to close unless he enters wifi password
+              e.preventDefault();
+            } else {
+              gogo(m);
+            }
+          }
+        },
+      ]
+    });
+    myPopup.then(function(res) {
+      console.log('go go go!', res);
+    });
+    
+  }
   
-  
-  
+  var alertPop = function() {
+    $scope.data = {}
+
+    // An elaborate, custom popup
+    var myPopup = $ionicPopup.show({
+      
+      title: 'Register ID successful',
+      subTitle: 'it would be awesome',
+      scope: $scope,
+      buttons: [
+        
+        {
+          text: '<b>OK</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            console.log('okey');
+            
+          }
+        },
+      ]
+    });
+    myPopup.then(function(res) {
+      console.log('go go go!', res);
+    });
+    
+  }
 }]);

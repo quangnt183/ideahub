@@ -1,7 +1,10 @@
 ideahub.controller("pageCtrl", ["$scope", "$state", "userData", "appData", "working", "$ionicPopup", "$timeout", "$http",
 	function($scope, $state, userData, appData, working, $ionicPopup, $timeout, $http){
-	$scope.curDoc = working.curDoc;
-	$scope.curProj = working.curProj;
+	if(!$scope.curDoc)
+    $scope.curDoc = working.curDoc;
+  if(!$scope.curProj)
+    $scope.curProj = working.curProj;
+	
   $scope.curTool = 0; // 1, 2, 3 for comment, pen, eraser
   $scope.toolBg = {};
   $scope.selectTool = function(tool){
